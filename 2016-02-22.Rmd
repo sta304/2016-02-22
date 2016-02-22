@@ -1,0 +1,48 @@
+---
+title: 'STA304'
+author: "Neil Montgomery"
+date: "2016-02-22"
+output: 
+  ioslides_presentation: 
+    css: 'styles.css' 
+    widescreen: true 
+    transition: 0.001
+---
+\newcommand{\E}[1]{E{\left(#1\right)}}
+\newcommand{\flist}[2]{\{#1_1, #1_2, \ldots, #1_#2\}}
+\newcommand{\fulist}[3]{\{#1_{{#2}1}, #1_{{#2}2}, \ldots, #1_{{#2}{#3}}\}}
+\renewcommand{\bar}[1]{\overline{#1}}
+\newcommand{\SE}[1]{\sqrt{\hat{V}(#1)}}
+
+```{r, echo=FALSE}
+options(scipen = 999, digits=3)
+```
+
+# stratified random sampling
+
+## recap
+
+* Stratified sampling can be useful for:
+    + getting better population parameter estimates, if the strata are (more) homogeneous
+    + further investigation of strata
+    
+* SRS done within each strata to get the usual estimates with the usual properties
+
+* Population paramaters are estimated using suitably weighted combinations of stratum estimates. 
+
+## (from last time)
+
+Going backwards: $\hat\tau = N\bar y_{st}$.
+
+True and estimated variance (because of independence):
+$$\begin{align*}
+V(\bar y_{st}) &= \sum_{i=1}^L W_i^2 V(\bar{y}_i)\\
+\hat V(\bar y_{st}) &= \sum_{i=1}^L W_i^2 \hat V(\bar{y}_i)
+\end{align*}$$
+
+Confidence interval $\bar y_{st} \pm 2\SE{y_{st}}$, bound on error of estimation, etc.
+
+## example(s)
+
+We will look at the transformer "data" from the term test.
+
