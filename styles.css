@@ -2,9 +2,12 @@ p, li, pre {
     color: black;
 }
 
-slides > slide {
-  margin-top: -500px;
+td, tr, th {
+  color: black !important;
+  background:white !important;
+  padding: 4px !important;
 }
 
-
-
+.rmdtable {
+  border-top: 1px solid #797979
+}

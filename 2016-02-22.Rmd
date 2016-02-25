@@ -14,9 +14,7 @@ output:
 \renewcommand{\bar}[1]{\overline{#1}}
 \newcommand{\SE}[1]{\sqrt{\hat{V}(#1)}}
 
-```{r, echo=FALSE}
-options(scipen = 999, digits=3)
-```
+
 
 # stratified random sampling
 
@@ -44,5 +42,78 @@ Confidence interval $\bar y_{st} \pm 2\SE{y_{st}}$, bound on error of estimation
 
 ## example(s)
 
-We will look at the transformer "data" from the term test.
+```{r, echo=FALSE, message=FALSE}
+library(rio)
+library(dplyr)
+tx <- import("tx.csv")
+N <- nrow(tx)
+n <- 600
+```
+
+We will look at the transformer "data" from the term test, by which I mean the actually simulated population's worth of data that was used for the test, contained in the file `tx.csv`. The story here has to be a little different. On the test knew only the locations of the transformer. For this example we'll pretend we know, say, the location and the `Size` (50KVA, 75KVA, or 100KVA) but not the Manufacturer or the Age.  
+
+## plan: compare SRS versus stratified by `Size`. 
+
+We will try to estimate the average age of the population of transformers. 
+
+We'll do this in two ways. One is using a SRS of size $n = `r n`$. For the other we'll stratify by transformer "Size", which is one of 50KVA, 75KVA, or 100KVA. A summary of the population by Size is as follows, including weights to be used in the stratified formulae later on. Note that here "Size" is a property of a transormer and not anything to do with how many of them there are.
+
+```{r, echo=FALSE}
+library(knitr)
+tx %>% 
+  group_by(Size) %>% 
+  summarise(N=n(), W = n()/nrow(tx)) -> N_by_size
+kable(N_by_size)
+```
+
+## the simple random sample
+
+We select a simple random sample of `r n` transformers and get the following sample mean, standard deviation, and "bound on the error of estimation"
+
+```{r, echo=FALSE}
+set.seed(1)
+tx_srs <- sample_n(tx, 600)
+
+tx_srs %>% 
+  summarize(mean = mean(Age), sd = sd(Age), 
+            B = 2*sqrt(var(Age)/n*(N-n)/N)) -> tx_srs_est
+
+kable(tx_srs_est)
+```
+
+## stratify by `Size`
+
+To make a fair comparison we'll keep an overall sample size of `r n`. We will choose to allocate the sample proportionally to the size of the strata (more on this later). Here is a summary of the results by stratum:
+```{r, echo=FALSE}
+set.seed(2)
+tx %>% 
+  group_by(Size) %>% 
+  sample_frac(n/N) -> tx_bySize
+
+tx_bySize %>% 
+  group_by(Size) %>% 
+  summarise(n = n(), means = mean(Age), variances = var(Age), sds = sd(Age)) -> strat_summ
+kable(strat_summ)
+```
+
+## stratified estimates
+
+The stratified estimator for the population mean is:
+
+$$ \bar y_{st} = \sum_{i=1}^L W_i\bar{y}_i $$
+
+with estimated variance:
+
+$$ \hat V(\bar y_{st}) = \sum_{i=1}^L W_i^2 \hat V(\bar{y}_i)$$
+
+where $\hat V(\bar{y}_i) = \frac{s^2}{n_i}\frac{N_i-n_i}{N_i}$.
+
+## stratified estimates
+
+Plug in numbers and weights from previous slides ago to get:
+
+$$\bar y_{st} = `r sum(strat_summ$means * N_by_size$W)`$$
+$$\hat V(\bar y_{st}) = `r sum(strat_summ$variances/strat_summ$n * (N_by_size$N - strat_summ$n)/N_by_size$N * N_by_size$W^2)`$$
+
+The "usual bound on the error of estimation" is $\sqrt{\hat V(\bar y_{st})} = `r 2*sqrt(sum(strat_summ$variances/strat_summ$n * (N_by_size$N - strat_summ$n)/N_by_size$N * N_by_size$W^2))`$.
 

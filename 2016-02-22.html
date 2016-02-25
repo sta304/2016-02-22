@@ -75,7 +75,7 @@
 
   </style>
 
-  <link href="data:text/css;charset=utf-8,p%2C%20li%2C%20pre%20%7B%0Acolor%3A%20black%3B%0A%7D%0Aslides%20%3E%20slide%20%7B%0Amargin%2Dtop%3A%20%2D500px%3B%0A%7D%0A" rel="stylesheet" type="text/css" />
+  <link href="data:text/css;charset=utf-8,p%2C%20li%2C%20pre%20%7B%0Acolor%3A%20black%3B%0A%7D%0Atd%2C%20tr%2C%20th%20%7B%0Acolor%3A%20black%20%21important%3B%0Abackground%3Awhite%20%21important%3B%0Apadding%3A%204px%20%21important%3B%0A%7D%0A%2Ermdtable%20%7B%0Aborder%2Dtop%3A%201px%20solid%20%23797979%0A%7D%0A" rel="stylesheet" type="text/css" />
 
 
 </head>
@@ -122,7 +122,108 @@ V({\overline{y}}_{st}) &amp;= \sum_{i=1}^L W_i^2 V({\overline{y}}_i)\\
 
 </article></slide><slide class=''><hgroup><h2>example(s)</h2></hgroup><article  id="examples">
 
-<p>We will look at the transformer &quot;data&quot; from the term test.</p></article></slide>
+<p>We will look at the transformer &quot;data&quot; from the term test, by which I mean the actually simulated population&#39;s worth of data that was used for the test, contained in the file <code>tx.csv</code>. The story here has to be a little different. On the test knew only the locations of the transformer. For this example we&#39;ll pretend we know, say, the location and the <code>Size</code> (50KVA, 75KVA, or 100KVA) but not the Manufacturer or the Age.</p>
+
+</article></slide><slide class=''><hgroup><h2>plan: compare SRS versus stratified by <code>Size</code>.</h2></hgroup><article  id="plan-compare-srs-versus-stratified-by-size.">
+
+<p>We will try to estimate the average age of the population of transformers.</p>
+
+<p>We&#39;ll do this in two ways. One is using a SRS of size \(n = 600\). For the other we&#39;ll stratify by transformer &quot;Size&quot;, which is one of 50KVA, 75KVA, or 100KVA. A summary of the population by Size is as follows, including weights to be used in the stratified formulae later on. Note that here &quot;Size&quot; is a property of a transormer and not anything to do with how many of them there are.</p>
+
+<table class = 'rmdtable'>
+<tr class="header">
+<th align="right">Size</th>
+<th align="right">N</th>
+<th align="right">W</th>
+</tr>
+<tr class="odd">
+<td align="right">50</td>
+<td align="right">9882</td>
+<td align="right">0.3797994</td>
+</tr>
+<tr class="even">
+<td align="right">75</td>
+<td align="right">9405</td>
+<td align="right">0.3614666</td>
+</tr>
+<tr class="odd">
+<td align="right">100</td>
+<td align="right">6732</td>
+<td align="right">0.2587340</td>
+</tr>
+</table>
+
+</article></slide><slide class=''><hgroup><h2>the simple random sample</h2></hgroup><article  id="the-simple-random-sample">
+
+<p>We select a simple random sample of 600 transformers and get the following sample mean, standard deviation, and &quot;bound on the error of estimation&quot;</p>
+
+<table class = 'rmdtable'>
+<tr class="header">
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">B</th>
+</tr>
+<tr class="odd">
+<td align="right">27.73778</td>
+<td align="right">17.12404</td>
+<td align="right">1.381957</td>
+</tr>
+</table>
+
+</article></slide><slide class=''><hgroup><h2>stratify by <code>Size</code></h2></hgroup><article  id="stratify-by-size">
+
+<p>To make a fair comparison we&#39;ll keep an overall sample size of 600. We will choose to allocate the sample proportionally to the size of the strata (more on this later). Here is a summary of the results by stratum:</p>
+
+<table class = 'rmdtable'>
+<tr class="header">
+<th align="right">Size</th>
+<th align="right">n</th>
+<th align="right">means</th>
+<th align="right">variances</th>
+<th align="right">sds</th>
+</tr>
+<tr class="odd">
+<td align="right">50</td>
+<td align="right">228</td>
+<td align="right">32.85426</td>
+<td align="right">364.4449</td>
+<td align="right">19.09044</td>
+</tr>
+<tr class="even">
+<td align="right">75</td>
+<td align="right">217</td>
+<td align="right">27.48206</td>
+<td align="right">320.7445</td>
+<td align="right">17.90934</td>
+</tr>
+<tr class="odd">
+<td align="right">100</td>
+<td align="right">155</td>
+<td align="right">21.57585</td>
+<td align="right">174.9298</td>
+<td align="right">13.22610</td>
+</tr>
+</table>
+
+</article></slide><slide class=''><hgroup><h2>stratified estimates</h2></hgroup><article  id="stratified-estimates">
+
+<p>The stratified estimator for the population mean is:</p>
+
+<p>\[ {\overline{y}}_{st} = \sum_{i=1}^L W_i{\overline{y}}_i \]</p>
+
+<p>with estimated variance:</p>
+
+<p>\[ \hat V({\overline{y}}_{st}) = \sum_{i=1}^L W_i^2 \hat V({\overline{y}}_i)\]</p>
+
+<p>where \(\hat V({\overline{y}}_i) = \frac{s^2}{n_i}\frac{N_i-n_i}{N_i}\).</p>
+
+</article></slide><slide class=''><hgroup><h2>stratified estimates</h2></hgroup><article  id="stratified-estimates-1">
+
+<p>Plug in numbers and weights from previous slides ago to get:</p>
+
+<p>\[{\overline{y}}_{st} = 27.9942797\]\[\hat V({\overline{y}}_{st}) = 0.4877308\]</p>
+
+<p>The &quot;usual bound on the error of estimation&quot; is \(\sqrt{\hat V({\overline{y}}_{st})} = 1.3967546\).</p></article></slide>
 
 
   <slide class="backdrop"></slide>
